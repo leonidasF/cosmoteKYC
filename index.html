@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mobile Call Action (POST JSON)</title>
+  <title>Mobile Call Action Form (no-cors Mode)</title>
   <script>
     function logAction(message) {
       const logDiv = document.getElementById('log');
@@ -42,22 +42,21 @@
       logAction(`Sending request to: ${endpoint}`);
       logAction(`Request body: ${JSON.stringify(requestBody)}`);
 
-      // Send the POST request using Fetch API with JSON data
+      // Send the POST request using Fetch API with no-cors mode
       fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': '*/*'
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
+        mode: 'no-cors'  // Disable CORS
       })
-      .then(response => response.text())
-      .then(data => {
-        // Log the response
-        logAction(`Response received: ${data}`);
+      .then(response => {
+        // Note: In no-cors mode, you cannot access the response data
+        logAction('Request sent. Response cannot be accessed due to no-cors mode.');
       })
       .catch(error => {
-        console.error('Error:', error);
         logAction(`Error: ${error}`);
       });
     }
@@ -75,7 +74,7 @@
 </head>
 <body>
 
-  <h2>Mobile Call Action Form (JSON Request)</h2>
+  <h2>Mobile Call Action Form (no-cors Mode)</h2>
   
   <form id="mobileCallActionForm" onsubmit="submitForm(event)">
     <label for="endpoint">Endpoint:</label><br>
