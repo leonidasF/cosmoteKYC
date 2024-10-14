@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mobile Call Action Form</title>
+  <title>Mobile Call Action Form (Basic Auth)</title>
   <script>
     function logAction(message) {
       const logDiv = document.getElementById('log');
@@ -18,8 +18,13 @@
       // Get the values from the input fields
       const endpoint = document.getElementById('endpoint').value;
       const token = document.getElementById('token').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
       const actionName = document.getElementById('actionName').value;
       const data = document.getElementById('data').value;
+
+      // Encode username and password for Basic Auth
+      const credentials = btoa(`${username}:${password}`);
 
       // Create the XML request body
       const xmlBody = `<?xml version="1.0" encoding="UTF-8"?>
@@ -37,16 +42,17 @@
       logAction(`Sending request to: ${endpoint}`);
       logAction(`Request body: ${xmlBody}`);
 
-      // Send the POST request using Fetch API
+      // Send the POST request using Fetch API with Basic Auth
       fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/xml',
-          'Accept': '*/*'
+          'Accept': '*/*',
+          'Authorization': `Basic ${credentials}` // Include Basic Auth credentials
         },
         body: xmlBody
       })
-      .then(response => response.text()) // or response.json() based on response type
+      .then(response => response.text())
       .then(data => {
         // Log the response
         logAction(`Response received: ${data}`);
@@ -70,7 +76,7 @@
 </head>
 <body>
 
-  <h2>Mobile Call Action Form</h2>
+  <h2>Mobile Call Action Form (Basic Authentication)</h2>
   
   <form id="mobileCallActionForm" onsubmit="submitForm(event)">
     <label for="endpoint">Endpoint:</label><br>
@@ -78,6 +84,12 @@
 
     <label for="token">Token:</label><br>
     <input type="text" id="token" name="token" value="demoToken123"><br><br>
+
+    <label for="username">Username:</label><br>
+    <input type="text" id="username" name="username" value="demo_administrator"><br><br>
+
+    <label for="password">Password:</label><br>
+    <input type="password" id="password" name="password" value="6BElfTvz2SRm"><br><br>
 
     <label for="actionName">Action Name:</label><br>
     <input type="text" id="actionName" name="actionName" value="demoAction"><br><br>
