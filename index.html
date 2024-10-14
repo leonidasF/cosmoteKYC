@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mobile Call Action Form (Basic Auth)</title>
+  <title>Mobile Call Action Form (JSON)</title>
   <script>
     function logAction(message) {
       const logDiv = document.getElementById('log');
@@ -18,39 +18,38 @@
       // Get the values from the input fields
       const endpoint = document.getElementById('endpoint').value;
       const token = document.getElementById('token').value;
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
       const actionName = document.getElementById('actionName').value;
-      const data = document.getElementById('data').value;
+      const communicationLanguage = document.getElementById('communicationLanguage').value;
+      const flavor = document.getElementById('flavor').value;
+      const uuid = document.getElementById('uuid').value;
 
-      // Encode username and password for Basic Auth
-      const credentials = btoa(`${username}:${password}`);
-
-      // Create the XML request body
-      const xmlBody = `<?xml version="1.0" encoding="UTF-8"?>
-        <Mobile_CallAction>
-          <ApiInfo>
-            <Token>${token}</Token>
-          </ApiInfo>
-          <Request>
-            <ActionName>${actionName}</ActionName>
-            <Data>${data}</Data>
-          </Request>
-        </Mobile_CallAction>`;
+      // Create the JSON request body
+      const requestBody = {
+        "ApiInfo": {
+          "Token": token
+        },
+        "Request": {
+          "ActionName": actionName,
+          "Data": JSON.stringify({
+            "communicationLanguage": communicationLanguage,
+            "flavor": flavor,
+            "uuid": uuid
+          })
+        }
+      };
 
       // Log the request
       logAction(`Sending request to: ${endpoint}`);
-      logAction(`Request body: ${xmlBody}`);
+      logAction(`Request body: ${JSON.stringify(requestBody)}`);
 
-      // Send the POST request using Fetch API with Basic Auth
+      // Send the POST request using Fetch API with JSON data
       fetch(endpoint, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/xml',
-          'Accept': '*/*',
-          'Authorization': `Basic ${credentials}` // Include Basic Auth credentials
+          'Content-Type': 'application/json',
+          'Accept': '*/*'
         },
-        body: xmlBody
+        body: JSON.stringify(requestBody)
       })
       .then(response => response.text())
       .then(data => {
@@ -76,26 +75,32 @@
 </head>
 <body>
 
-  <h2>Mobile Call Action Form (Basic Authentication)</h2>
+  <h2>Mobile Call Action Form (JSON Request)</h2>
   
   <form id="mobileCallActionForm" onsubmit="submitForm(event)">
     <label for="endpoint">Endpoint:</label><br>
     <input type="text" id="endpoint" name="endpoint" value="https://cosmotekyc-sandbox.mxapps.io/rest/mobilecallaction/v1/CallAction"><br><br>
 
     <label for="token">Token:</label><br>
-    <input type="text" id="token" name="token" value="demoToken123"><br><br>
-
-    <label for="username">Username:</label><br>
-    <input type="text" id="username" name="username" value="demo_administrator"><br><br>
-
-    <label for="password">Password:</label><br>
-    <input type="password" id="password" name="password" value="6BElfTvz2SRm"><br><br>
+    <input type="text" id="token" name="token" value="4463685d-d6ec-4b60-9ed8-a0e519865924"><br><br>
 
     <label for="actionName">Action Name:</label><br>
-    <input type="text" id="actionName" name="actionName" value="demoAction"><br><br>
+    <input type="text" id="actionName" name="actionName" value="Mobile-01-Initiate"><br><br>
 
-    <label for="data">Data:</label><br>
-    <input type="text" id="data" name="data" value="demoData"><br><br>
+    <label for="communicationLanguage">Communication Language:</label><br>
+    <select id="communicationLanguage" name="communicationLanguage">
+      <option value="GR">GR</option>
+      <option value="DE">DE</option>
+    </select><br><br>
+
+    <label for="flavor">Flavor:</label><br>
+    <select id="flavor" name="flavor">
+      <option value="GR">GR</option>
+      <option value="DE">DE</option>
+    </select><br><br>
+
+    <label for="uuid">UUID:</label><br>
+    <input type="text" id="uuid" name="uuid" value="3d8b1a68-0699-4ba6-a7af-e9cef929927e"><br><br>
 
     <input type="submit" value="Submit">
   </form>
