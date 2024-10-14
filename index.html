@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Call Action Form</title>
+  <script>
+    function logAction(message) {
+      const logDiv = document.getElementById('log');
+      const timestamp = new Date().toLocaleTimeString();
+      logDiv.innerHTML += `<p><strong>[${timestamp}]</strong> ${message}</p>`;
+      logDiv.scrollTop = logDiv.scrollHeight; // Auto-scroll to the latest log
+    }
+
+    function submitForm(event) {
+      event.preventDefault(); // Prevent form submission from reloading the page
+
+      // Get the values from the input fields
+      const endpoint = document.getElementById('endpoint').value;
+      const token = document.getElementById('token').value;
+      const actionName = document.getElementById('actionName').value;
+      const data = document.getElementById('data').value;
+
+      // Create the XML request body
+      const xmlBody = `<?xml version="1.0" encoding="UTF-8"?>
+        <Mobile_CallAction>
+          <ApiInfo>
+            <Token>${token}</Token>
+          </ApiInfo>
+          <Request>
+            <ActionName>${actionName}</ActionName>
+            <Data>${data}</Data>
+          </Request>
+        </Mobile_CallAction>`;
+
+      // Log the request
+      logAction(`Sending request to: ${endpoint}`);
+      logAction(`Request body: ${xmlBody}`);
+
+      // Send the POST request using Fetch API
+      fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/xml',
+          'Accept': '*/*'
+        },
+        body: xmlBody
+      })
+      .then(response => response.text()) // or response.json() based on response type
+      .then(data => {
+        // Log the response
+        logAction(`Response received: ${data}`);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        logAction(`Error: ${error}`);
+      });
+    }
+  </script>
+  <style>
+    #log {
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 200px;
+      overflow-y: scroll;
+      background-color: #f9f9f9;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Mobile Call Action Form</h2>
+  
+  <form id="mobileCallActionForm" onsubmit="submitForm(event)">
+    <label for="endpoint">Endpoint:</label><br>
+    <input type="text" id="endpoint" name="endpoint" value="https://cosmotekyc-sandbox.mxapps.io/rest/mobilecallaction/v1/CallAction"><br><br>
+
+    <label for="token">Token:</label><br>
+    <input type="text" id="token" name="token" value="demoToken123"><br><br>
+
+    <label for="actionName">Action Name:</label><br>
+    <input type="text" id="actionName" name="actionName" value="demoAction"><br><br>
+
+    <label for="data">Data:</label><br>
+    <input type="text" id="data" name="data" value="demoData"><br><br>
+
+    <input type="submit" value="Submit">
+  </form>
+
+  <!-- Log div for showing actions and responses -->
+  <h3>Action Log</h3>
+  <div id="log"></div>
+
+</body>
+</html>
