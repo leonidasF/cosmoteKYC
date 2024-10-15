@@ -51,14 +51,26 @@
         },
         body: JSON.stringify(requestBody)
       })
-      .then(response => response.text())
+      .then(response => {
+        // Check if CORS error occurs
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text();
+      })
       .then(data => {
         // Log the response
         logAction(`Response received: ${data}`);
       })
       .catch(error => {
         console.error('Error:', error);
-        logAction(`Error: ${error}`);
+
+        // CORS specific error handling
+        if (error.message.includes('CORS')) {
+          logAction('CORS Error: Cross-Origin Request Blocked. Check server CORS settings.');
+        } else {
+          logAction(`Error: ${error}`);
+        }
       });
     }
   </script>
@@ -108,6 +120,10 @@
   <!-- Log div for showing actions and responses -->
   <h3>Action Log</h3>
   <div id="log"></div>
+
+  <!-- CORS handling information -->
+  <h3>CORS Notes:</h3>
+  <p>If you encounter CORS issues, ensure the server has the correct <strong>Access-Control-Allow-Origin</strong> header set, or use a proxy server to bypass CORS in development.</p>
 
 </body>
 </html>
